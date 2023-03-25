@@ -28,26 +28,28 @@ for (i in 1:200) {
 table(c)
 data = data[,-c(10,12)]
 data[,c(10,11,13,14)] = data[,c(10,11,13,14)]%>% round(5)
+write.csv(data,file="D:/课程/实训课数据/组别1/1_12.csv")
+
 ```
 
 
 ```{r}
 data$年龄 = data$年龄 %>% round(1)
 colnames(data)[7:8] = c("身高(cm)","体重(kg)")
-data$`头围（cm）` = NA
+# data$`头围（cm）` = NA
 data$h_Percecnt=(data[,7]-min(data[,7]))/(max(data[,7])-min(data[,7]))
 data$h_Zscore =scale(data[,7],center=T,scale=T)
 data$w_Percecnt=(data[,8]-min(data[,8]))/(max(data[,8])-min(data[,8]))
 data$w_Zscore =scale(data[,8],center=T,scale=T)
 # data[177,8] = data[177,11]*2.03+17.37
-# data[177,8] = 17.5
+data[177,8] = 17.5
 # data[238,8] = data[238,11]*2.45+18.93
-data[238,8] =21.5
+# data[238,8] =21.5
 data$h_Percecnt=(data[,7]-min(data[,7]))/(max(data[,7])-min(data[,7]))
 data$h_Zscore =scale(data[,7],center=T,scale=T)
 data$w_Percecnt=(data[,8]-min(data[,8]))/(max(data[,8])-min(data[,8]))
 data$w_Zscore =scale(data[,8],center=T,scale=T)
-data$date = "2016"
+data$date = "12月"
 data$BMI = data$`体重(kg)`/(data$`身高(cm)`/100)**2
 data$BMI_Zscore = 0
 for (i in 1:nrow(data)) {
@@ -139,25 +141,25 @@ data$wz = "xia"
 data$BMIz = "xia"
 for (i in 1:nrow(data)) {
   if (data[i,11]<(-2)) {data[i,"hz"] = "下"}
-  if (data[i,11]<(-1) & data[i,11]>(-2)) {data[i,"hz"]  ="中下"}
-  if (data[i,11]<1 & data[i,11]>(-1)) {data[i,"hz"]  ="中"}
-  if (data[i,11]<2 & data[i,11]>1) {data[i,"hz"]  ="中上"}
+  if (data[i,11]<(-1) & data[i,11]>=(-2)) {data[i,"hz"]  ="中下"}
+  if (data[i,11]<=1 & data[i,11]>=(-1)) {data[i,"hz"]  ="中"}
+  if (data[i,11]<=2 & data[i,11]>1) {data[i,"hz"]  ="中上"}
   if (data[i,11]>2) {data[i,"hz"]  ="上"}
   if (data[i,13]<(-2)) {data[i,"wz"]  ="下"}
-  if (data[i,13]<(-1) & data[i,13]>(-2)) {data[i,"wz"]  ="中下"}
-  if (data[i,13]<1 & data[i,13]>(-1)) {data[i,"wz"]  ="中"}
-  if (data[i,13]<2 & data[i,13]>1) {data[i,"wz"]  ="中上"}
+  if (data[i,13]<(-1) & data[i,13]>=(-2)) {data[i,"wz"]  ="中下"}
+  if (data[i,13]<=1 & data[i,13]>=(-1)) {data[i,"wz"]  ="中"}
+  if (data[i,13]<=2 & data[i,13]>1) {data[i,"wz"]  ="中上"}
   if (data[i,13]>2) {data[i,"wz"]  ="上"}
   if (data[i,16]<(-2)) {data[i,"BMIz"]  ="下"}
-  if (data[i,16]<(-1) & data[i,16]>(-2)) {data[i,"BMIz"]  ="中下"}
-  if (data[i,16]<1 & data[i,16]>(-1)) {data[i,"BMIz"]  ="中"}
-  if (data[i,16]<2 & data[i,16]>1) {data[i,"BMIz"]  ="中上"}
-  if (data[i,16]>2) {data[i,"BMIz"]  ="上"}
+  if (data[i,16]<(-1) & data[i,16]>=(-2)) {data[i,"BMIz"]  ="中下"}
+  if (data[i,16]<1 & data[i,16]>=(-1)) {data[i,"BMIz"]  ="中"}
+  if (data[i,16]<=2 & data[i,16]>1) {data[i,"BMIz"]  ="中上"}
+  if (data[i,16]>=2) {data[i,"BMIz"]  ="上"}
 }
 
 table(data$年龄)
 colnames(data)
-data = rbind(data1,data2)
+# data = rbind(data1,data2)
 ```
 
 
@@ -200,7 +202,7 @@ Zscore
 ##图表可视化
 ```{r, fig.height=4, fig.width=7,results="hide"}
 library(ggplot2)
-ggplot(data, aes(x=年龄, y=`体重(kg)`,color=性别,alpha = w_Zscore)) + 
+ggplot(data, aes(x=年龄, y=BMI,color=性别,alpha = BMI_Zscore)) + 
   geom_point(size = 2.5,shape = 16)+
   facet_wrap(~性别)+
   theme_bw()+
@@ -209,6 +211,23 @@ ggplot(data, aes(x=年龄, y=`体重(kg)`,color=性别,alpha = w_Zscore)) +
 ```
 
 ## pinshu
+```{r, fig.height=2, fig.width=6.5,results="hide"}
+ggplot(data[data[,3]=="女",], aes(x = "班级")) + theme_bw()+
+  geom_histogram(aes(y = ..count..),
+                 binwidth = 1,col = "orange1",fill = "orange1",alpha =0.4)+
+   geom_density(aes(y = ..density..),colour = "orange1",fill = "orange1",alpha =0.2)+
+  scale_x_continuous(limits =c(90,127),
+         breaks = seq(90, 127, 2))
+
+ggplot(data[data[,3]=="男",], aes(`身高(cm)`)) + theme_bw()+
+  geom_histogram(aes(y = ..density..),
+                 binwidth = 1,col = "green3",fill = "green3",alpha =0.4)+
+   geom_density(aes(y = ..density..),colour = "green3",fill = "green3",alpha =0.2)+
+  scale_x_continuous(limits =c(90,130),
+         breaks = seq(90, 130, 2))
+
+```
+
 ```{r, fig.height=2, fig.width=6.5,results="hide"}
 ggplot(data[data[,3]=="女",], aes(`身高(cm)`)) + theme_bw()+
   geom_histogram(aes(y = ..density..),
@@ -359,6 +378,35 @@ ggbetweenstats(data,x = 性别,y = BMI,
 ```
 
 ```{r}
+ggbetweenstats(
+  data = data[data[,3]=="男",],
+  x = date,
+  y = `身高(cm)`,
+  caption = ,
+  type = "p", ## 统计方法
+  bf.message = TRUE,
+  results.subtitle = TRUE,
+  # xlab = "Condition", ## x轴的label
+  # ylab = "Desire to kill an artrhopod", ## y轴的label
+  effsize.type = "biased", ## 效应值类型
+  sphericity.correction = F, ## 不显示校正后的DFS和P值
+  pairwise.comparisons = F, ## 显示配对比较
+  outlier.tagging = TRUE, ## 是否标记outlier
+  outlier.coef = 1.5, ##  Tukey's rule的系数
+  # outlier.label = region, ## 标记outlier的label
+  outlier.label.color = "red", ## 标记outlier的label的颜色
+  mean.plotting = TRUE, ## 是否显示均值
+  point.path = T,# 连线
+  mean.color = "darkblue", ## 均值的颜色
+  package = "yarrr", ## 颜色所取的包
+  palette = "info2", ## 所取的调色板
+  # title = "Comparison of desire to kill bugs",
+  # caption = "Source: Ryan et al., 2013"
+)+scale_colour_manual(values = c("blue", "seagreen2")) # "blue", "seagreen2"     "red", "#FFA500"
+```
+
+
+```{r}
 ggwithinstats(
   data = data[data[,3]=="女",],
   x = date,
@@ -388,11 +436,11 @@ ggwithinstats(
 
 https://zhuanlan.zhihu.com/p/580374939
 ```{r}
-ggwithinstats(
+ggbetweenstats(# ggbetweenstats or ggwithinstats
   data = data,
   x = group,
   y = `体重(kg)`,
-  type = "r")+
+  type = "p")+
   scale_colour_manual(values = c("blue","red","green3", "orange1"))
 
 ```
@@ -467,4 +515,157 @@ ggpiestats(
     )
   )
 ```
+
+##点图
+
+```{r}
+ggscatterstats(
+  data = data[data[,17]=="2014_男",], 
+  x = "年龄", y = "身高(cm)", 
+     bf.message = F,
+  smooth.line.args = list(linewidth = 1.5, color = "blue", method = "lm", formula = y ~
+    x),
+  # label.var = h_Zscore, ## variable to use for labeling data points
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  # point.label.args = list(alpha = 0.7, size = 4, color = "blue"),
+  title = "2014_男"
+)+scale_x_continuous(limits = c(2.7,6.4),breaks = seq(3, 6, 0.5))+
+  scale_y_continuous(limits = c(90,135),breaks = seq(90, 135, 5))
+```
+
+```{r}
+ggscatterstats(
+  data = data[data[,17]=="2014_女",], 
+  x = "年龄", y = "身高(cm)", 
+       bf.message = F,
+  smooth.line.args = list(linewidth = 1.5, color = "red", method = "lm", formula = y ~
+    x),
+  # label.var = h_Zscore, ## variable to use for labeling data points
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  # point.label.args = list(alpha = 0.7, size = 4, color = "blue"),
+  title = "2014_女"
+)+scale_x_continuous(limits = c(2.7,6.4),breaks = seq(3, 6, 0.5))+
+  scale_y_continuous(limits = c(90,135),breaks = seq(90, 135, 5))
+```
+
+```{r}
+ggscatterstats(
+  data = data[data[,17]=="2016_男",], 
+  x = "年龄", y = "身高(cm)", 
+         bf.message = F,
+  smooth.line.args = list(linewidth = 1.5, color = "green3", method = "lm", formula = y ~
+    x),
+  # label.var = h_Zscore, ## variable to use for labeling data points
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  # point.label.args = list(alpha = 0.7, size = 4, color = "blue"),
+  title = "2016_男"
+)+scale_x_continuous(limits = c(2.7,6.4),breaks = seq(3, 6, 0.5))+
+  scale_y_continuous(limits = c(90,135),breaks = seq(90, 135, 5))
+```
+
+```{r}
+ggscatterstats(
+  data = data[data[,17]=="2016_女",], 
+  x = "年龄", y = "身高(cm)", 
+           bf.message = F,
+  smooth.line.args = list(linewidth = 1.5, color = "orange1", method = "lm", formula = y ~
+    x),
+  # label.var = h_Zscore, ## variable to use for labeling data points
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  # point.label.args = list(alpha = 0.7, size = 4, color = "blue"),
+  title = "2016_女"
+)+scale_x_continuous(limits = c(2.7,6.4),breaks = seq(3, 6, 0.5))+
+  scale_y_continuous(limits = c(90,135),breaks = seq(90, 135, 5))
+```
+
+```{r}
+ggscatterstats(
+  data = data[data[,17]=="2014_男",], 
+  x = "年龄", y = "体重(kg)", 
+     bf.message = F,
+  smooth.line.args = list(linewidth = 1.5, color = "blue", method = "lm", formula = y ~
+    x),
+  # label.var = h_Zscore, ## variable to use for labeling data points
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  # point.label.args = list(alpha = 0.7, size = 4, color = "blue"),
+  title = "2014_男"
+)+scale_x_continuous(limits = c(2.7,6.4),breaks = seq(3, 6, 0.5))+
+  scale_y_continuous(limits = c(12,39),breaks = seq(15, 35, 5))
+```
+
+```{r}
+ggscatterstats(
+  data = data[data[,17]=="2014_女",], 
+  x = "年龄", y = "体重(kg)", 
+       bf.message = F,
+  smooth.line.args = list(linewidth = 1.5, color = "red", method = "lm", formula = y ~
+    x),
+  # label.var = h_Zscore, ## variable to use for labeling data points
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  # point.label.args = list(alpha = 0.7, size = 4, color = "blue"),
+  title = "2014_女"
+)+scale_x_continuous(limits = c(2.7,6.4),breaks = seq(3, 6, 0.5))+
+  scale_y_continuous(limits = c(12,39),breaks = seq(15, 35, 5))
+```
+
+```{r}
+ggscatterstats(
+  data = data[data[,17]=="2016_男",], 
+  x = "年龄", y = "体重(kg)", 
+         bf.message = F,
+  smooth.line.args = list(linewidth = 1.5, color = "green3", method = "lm", formula = y ~
+    x),
+  # label.var = h_Zscore, ## variable to use for labeling data points
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  # point.label.args = list(alpha = 0.7, size = 4, color = "blue"),
+  title = "2016_男"
+)+scale_x_continuous(limits = c(2.7,6.4),breaks = seq(3, 6, 0.5))+
+  scale_y_continuous(limits = c(12,39),breaks = seq(15, 35, 5))
+```
+
+```{r}
+ggscatterstats(
+  data = data[data[,17]=="2016_女",], 
+  x = "年龄", y = "体重(kg)", 
+           bf.message = F,
+  smooth.line.args = list(linewidth = 1.5, color = "orange1", method = "lm", formula = y ~
+    x),
+  # label.var = h_Zscore, ## variable to use for labeling data points
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  # point.label.args = list(alpha = 0.7, size = 4, color = "blue"),
+  title = "2016_女"
+)+scale_x_continuous(limits = c(2.7,6.4),breaks = seq(3, 6, 0.5))+
+  scale_y_continuous(limits = c(12,39),breaks = seq(15, 35, 5))
+```
+
+
+```{r}
+grouped_ggscatterstats(
+  ## arguments relevant for ggscatterstats
+  data = data, 
+  x = "年龄", 
+  y = BMI, 
+  grouping.var = group,
+  xlab = "", ## label for the x-axis
+  ylab = "", ## label for the y-axis
+  # label.var = manufacturer, ## variable to use for labeling data points
+  type = "p",
+  point.args = list(size = 3, alpha = 0.4, stroke = 0),
+  # label.expression = displ > 5 & hwy> 24, ## which points to label
+  point.label.args = list(size = 4),
+  xfill = "#CC79A7", ## fill for marginals on the x-axis
+  yfill = "#009E73", ## fill for marginals on the y-axis
+  
+  # ggtheme = ggthemes::theme_tufte(),
+  ## arguments relevant for combine_plots
+  # annotation.args = list(
+  #   title = "title",
+  #   caption = "Source"
+  #   ),
+  plotgrid.args = list(nrow = 2, ncol = 2),
+             package = "ggsci",
+           palette = "category20_d3"
+)
+```
+
 
